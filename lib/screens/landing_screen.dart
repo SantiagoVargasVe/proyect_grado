@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({Key? key}) : super(key: key);
@@ -9,6 +10,8 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   String? validateEmail(String? value) {
     if (value == null) {
