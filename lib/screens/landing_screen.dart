@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'register_screen.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({Key? key}) : super(key: key);
@@ -36,6 +37,10 @@ class _LandingScreenState extends State<LandingScreen> {
     }
 
     return null;
+  }
+
+  void goToRegisterScreen() {
+    Navigator.of(context).pushNamed(RegisterScreen.routeName);
   }
 
   @override
@@ -92,7 +97,8 @@ class _LandingScreenState extends State<LandingScreen> {
                       onPressed: () {},
                       child: const Text('Iniciar sesión')),
                   TextButton(
-                      onPressed: () {}, child: const Text('Crear cuenta')),
+                      onPressed: goToRegisterScreen,
+                      child: const Text('Crear cuenta')),
                 ],
               ),
             )
