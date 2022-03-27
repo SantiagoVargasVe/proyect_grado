@@ -12,6 +12,10 @@ class _CreateAccountState extends State<CreateAccount> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
 
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
   String? validateEmail(String? value) {
     if (value == null) {
       return 'El campo es requerido';
@@ -31,10 +35,52 @@ class _CreateAccountState extends State<CreateAccount> {
     }
 
     if (value.length < 6) {
-      return 'La contraseña debe tener al menos 6 caracteres';
+      return 'Se necesita al menos 6 caracteres';
     }
 
     return null;
+  }
+
+  String? validateConfirmPassword(String? value) {
+    if (value == null) {
+      return 'El campo es requerido';
+    }
+
+    if (value != _passwordController.text) {
+      return 'Las contraseñas no coinciden';
+    }
+
+    return null;
+  }
+
+  void validateForm(BuildContext ctx) {
+    if (_formKey.currentState!.validate()) {
+      registerUser(ctx);
+    }
+  }
+
+  void registerUser(BuildContext ctx) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _emailController.text, password: _passwordController.text);
+
+      ScaffoldMessenger.of(ctx)
+          .showSnackBar(const SnackBar(content: Text('Usuario creado')));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
+            content: Text('Contraseña muy débil'),
+            backgroundColor: Colors.red));
+      } else if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
+            content: Text('El email ya está en uso'),
+            backgroundColor: Colors.red));
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -49,11 +95,11 @@ class _CreateAccountState extends State<CreateAccount> {
               Image.asset('assets/images/avatar.png', width: 200, height: 200),
               SizedBox(
                 width: 250,
-                height: 236,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextFormField(
+                      controller: _emailController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Email',
@@ -62,29 +108,35 @@ class _CreateAccountState extends State<CreateAccount> {
                       ),
                       validator: validateEmail,
                     ),
+                    const SizedBox(height: 20),
                     TextFormField(
+                      controller: _passwordController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Contraseña',
                         hintText: "*********",
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      validator: validateEmail,
+                      validator: validatePassword,
                     ),
+                    const SizedBox(height: 20),
                     TextFormField(
+                      controller: _confirmPasswordController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Confirmar contraseña',
                         hintText: "*********",
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
-                      validator: validateEmail,
+                      validator: validateConfirmPassword,
                     ),
                   ],
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  validateForm(context);
+                },
                 child: const Text("Crear cuenta"),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(300, 40),
