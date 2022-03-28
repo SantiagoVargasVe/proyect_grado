@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:proyecto_grado/widgets/image_selector.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({Key? key}) : super(key: key);
@@ -92,7 +93,7 @@ class _CreateAccountState extends State<CreateAccount> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Image.asset('assets/images/avatar.png', width: 200, height: 200),
+              ImageSelector(),
               SizedBox(
                 width: 250,
                 child: Column(
