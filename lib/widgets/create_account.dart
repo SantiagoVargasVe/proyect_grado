@@ -17,11 +17,14 @@ class _CreateAccountState extends State<CreateAccount> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _nameController = TextEditingController();
+
+  var _showPassword = false;
+  var _showConfirmPassword = false;
 
   var _selectedImage = "";
 
   void changeSelectedImage(String image) {
-    print(image);
     setState(() {
       _selectedImage = image;
     });
@@ -35,6 +38,19 @@ class _CreateAccountState extends State<CreateAccount> {
     final RegExp emailExp = RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
     if (!emailExp.hasMatch(value)) {
       return 'El email no es válido';
+    }
+
+    return null;
+  }
+
+  String? validateName(String? value) {
+    if (value == null) {
+      return 'El campo es requerido';
+    }
+
+    final RegExp nameExp = RegExp(r'^[a-zA-Z]+$');
+    if (!nameExp.hasMatch(value)) {
+      return 'El nombre no es válido';
     }
 
     return null;
@@ -77,8 +93,13 @@ class _CreateAccountState extends State<CreateAccount> {
           .createUserWithEmailAndPassword(
               email: _emailController.text, password: _passwordController.text);
 
-      ScaffoldMessenger.of(ctx)
-          .showSnackBar(const SnackBar(content: Text('Usuario creado')));
+      addUser();
+
+      Navigator.of(ctx).pop();
+      ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
+        content: Text('Usuario creado'),
+        backgroundColor: Colors.green,
+      ));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
@@ -94,76 +115,117 @@ class _CreateAccountState extends State<CreateAccount> {
     }
   }
 
-  void addUser() {
-    users.doc(auth.currentUser!.uid).set({
+  Future<void> addUser() async {
+    await users.doc(auth.currentUser!.uid).set({
       'email': _emailController.text,
       'avatar': _selectedImage,
+      'nombre': _nameController.text,
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        width: double.infinity,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              ImageSelector(
-                changeSelectedImage: changeSelectedImage,
-              ),
-              SizedBox(
-                width: 250,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email',
-                        hintText: "seneca@uniandes.edu.co",
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      validator: validateEmail,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Contraseña',
-                        hintText: "*********",
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      validator: validatePassword,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _confirmPasswordController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Confirmar contraseña',
-                        hintText: "*********",
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                      ),
-                      validator: validateConfirmPassword,
-                    ),
-                  ],
+    return SingleChildScrollView(
+      child: SizedBox(
+          width: double.infinity,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ImageSelector(
+                  changeSelectedImage: changeSelectedImage,
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  validateForm(context);
-                },
-                child: const Text("Crear cuenta"),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(300, 40),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 250,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Email',
+                          hintText: "seneca@uniandes.edu.co",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                        validator: validateEmail,
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Nombre',
+                          hintText: "Seneca",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                        validator: validateName,
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_showPassword,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: 'Contraseña',
+                          hintText: "*********",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
+                          ),
+                        ),
+                        validator: validatePassword,
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: !_showConfirmPassword,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: 'Confirmar contraseña',
+                          hintText: "*********",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showConfirmPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showConfirmPassword = !_showConfirmPassword;
+                              });
+                            },
+                          ),
+                        ),
+                        validator: validateConfirmPassword,
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ));
+                ElevatedButton(
+                  onPressed: () {
+                    validateForm(context);
+                  },
+                  child: const Text("Crear cuenta"),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(300, 40),
+                  ),
+                ),
+              ],
+            ),
+          )),
+    );
   }
 }
