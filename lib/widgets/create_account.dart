@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:proyecto_grado/widgets/image_selector.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({Key? key}) : super(key: key);
@@ -12,10 +13,19 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
-
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  var _selectedImage = "";
+
+  void changeSelectedImage(String image) {
+    print(image);
+    setState(() {
+      _selectedImage = image;
+    });
+  }
 
   String? validateEmail(String? value) {
     if (value == null) {
@@ -84,6 +94,13 @@ class _CreateAccountState extends State<CreateAccount> {
     }
   }
 
+  void addUser() {
+    users.doc(auth.currentUser!.uid).set({
+      'email': _emailController.text,
+      'avatar': _selectedImage,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -93,7 +110,9 @@ class _CreateAccountState extends State<CreateAccount> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              ImageSelector(),
+              ImageSelector(
+                changeSelectedImage: changeSelectedImage,
+              ),
               SizedBox(
                 width: 250,
                 child: Column(

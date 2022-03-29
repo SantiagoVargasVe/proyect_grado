@@ -3,7 +3,9 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:math';
 
 class ImageSelector extends StatefulWidget {
-  const ImageSelector({Key? key}) : super(key: key);
+  final Function changeSelectedImage;
+  const ImageSelector({required this.changeSelectedImage, Key? key})
+      : super(key: key);
 
   @override
   State<ImageSelector> createState() => _ImageSelectorState();
@@ -30,6 +32,7 @@ class _ImageSelectorState extends State<ImageSelector> {
     setState(() {
       _loadingImages = false;
       _currentImageIndex = random.nextInt(urls.length);
+      widget.changeSelectedImage(urls[_currentImageIndex]);
     });
   }
 
@@ -55,6 +58,7 @@ class _ImageSelectorState extends State<ImageSelector> {
                 onTap: () {
                   setState(() {
                     _currentImageIndex = random.nextInt(urls.length);
+                    widget.changeSelectedImage(urls[_currentImageIndex]);
                   });
                 },
               ),
