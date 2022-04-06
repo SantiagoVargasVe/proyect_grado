@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_grado/screens/home_screen.dart';
 import 'screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'screens/register_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +31,10 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: LandingScreen(),
+      routes: {
+        RegisterScreen.routeName: (context) => RegisterScreen(),
+        HomeScreen.routeName: (context) => HomeScreen(),
+      },
     );
   }
 }
