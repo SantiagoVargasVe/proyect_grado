@@ -49,11 +49,9 @@ class _LandingScreenState extends State<LandingScreen> {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text, password: _passwordController.text);
-      ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
-        content: Text('Login éxitoso'),
-        backgroundColor: Colors.green,
-      ));
-      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          HomeScreen.routeName, (Route<dynamic> route) => false);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
