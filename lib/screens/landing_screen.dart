@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'home_screen.dart';
 import 'register_screen.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -48,10 +49,9 @@ class _LandingScreenState extends State<LandingScreen> {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text, password: _passwordController.text);
-      ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
-        content: Text('Login éxitoso'),
-        backgroundColor: Colors.green,
-      ));
+
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          HomeScreen.routeName, (Route<dynamic> route) => false);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
@@ -80,85 +80,85 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: SizedBox(
-        width: double.infinity,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const Image(
-                image: AssetImage('assets/images/landing_logo.png'),
-                width: 200,
-                height: 200,
-              ),
-              SizedBox(
-                width: 250,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Email',
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
+        resizeToAvoidBottomInset: false,
+        body: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Image(
+                  image: AssetImage('assets/images/landing_logo.png'),
+                  width: 200,
+                  height: 200,
+                ),
+                SizedBox(
+                  width: 250,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Email',
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                        validator: validateEmail,
                       ),
-                      validator: validateEmail,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: !_showPassword,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: 'Contraseña',
-                        hintText: "*********",
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _showPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_showPassword,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: 'Contraseña',
+                          hintText: "*********",
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
+                          ),
+                        ),
+                        validator: validatePassword,
+                      ),
+                      const SizedBox(height: 10),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text('¿Olvidaste tu contraseña?'),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(300, 40),
                           ),
                           onPressed: () {
-                            setState(() {
-                              _showPassword = !_showPassword;
-                            });
+                            validateForm(context);
                           },
-                        ),
-                      ),
-                      validator: validatePassword,
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('¿Olvidaste tu contraseña?'),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                child: Column(
-                  children: [
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(300, 40),
-                        ),
-                        onPressed: () {
-                          validateForm(context);
-                        },
-                        child: const Text('Iniciar sesión')),
-                    TextButton(
-                        onPressed: goToRegisterScreen,
-                        child: const Text('Crear cuenta')),
-                  ],
-                ),
-              )
-            ],
+                          child: const Text('Iniciar sesión')),
+                      TextButton(
+                          onPressed: goToRegisterScreen,
+                          child: const Text('Crear cuenta')),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      ),
-    ));
+        ));
   }
 }
