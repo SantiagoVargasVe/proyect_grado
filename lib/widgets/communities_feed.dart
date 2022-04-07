@@ -4,18 +4,12 @@ import 'event_slider.dart';
 import '../models/event_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class CommunitiesFeed extends StatefulWidget {
-  const CommunitiesFeed({Key? key}) : super(key: key);
-
-  @override
-  State<CommunitiesFeed> createState() => _CommunitiesFeedState();
-}
-
-class _CommunitiesFeedState extends State<CommunitiesFeed> {
-  CollectionReference communities =
+class CommunitiesFeed extends StatelessWidget {
+  final CollectionReference communities =
       FirebaseFirestore.instance.collection('comunidades');
 
   final user = FirebaseAuth.instance.currentUser;
+  CommunitiesFeed({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Column(
