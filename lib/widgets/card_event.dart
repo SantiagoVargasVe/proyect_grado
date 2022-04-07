@@ -21,8 +21,8 @@ class CardEvent extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(" Club de lectura",
-                  style: Theme.of(context).textTheme.headline5),
+              Text(title,
+                  maxLines: 2, style: Theme.of(context).textTheme.headline5),
               Text(date?.toString() ?? ""),
             ]),
           ),

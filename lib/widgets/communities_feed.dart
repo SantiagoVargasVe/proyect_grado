@@ -1,11 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'event_slider.dart';
+import '../models/event_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class CommunitiesFeed extends StatelessWidget {
-  CommunitiesFeed({Key? key}) : super(key: key);
+class CommunitiesFeed extends StatefulWidget {
+  const CommunitiesFeed({Key? key}) : super(key: key);
 
-  final List dummyData = List.generate(10, (index) => '$index');
+  @override
+  State<CommunitiesFeed> createState() => _CommunitiesFeedState();
+}
 
+class _CommunitiesFeedState extends State<CommunitiesFeed> {
+  CollectionReference communities =
+      FirebaseFirestore.instance.collection('comunidades');
+
+  final user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -14,13 +24,43 @@ class CommunitiesFeed extends StatelessWidget {
           width: double.infinity,
           child: Padding(
             padding: const EdgeInsets.only(left: 15),
-            child: Text("Activos",
+            child: Text("Tus comunidades",
                 textAlign: TextAlign.start,
                 style: Theme.of(context).textTheme.headline6),
           ),
         ),
         const SizedBox(height: 20),
-        EventSlider(dummyData: dummyData),
+        FutureBuilder<QuerySnapshot>(
+            future: communities.get(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text('Error'),
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.done) {
+                List<EventData> data = snapshot.data!.docs
+                    .map((e) {
+                      return EventData(
+                          title: e.id,
+                          date: (e.data() as Map<String, dynamic>)['date'],
+                          students: (e.data()
+                                  as Map<String, dynamic>)['estudiantes'] ??
+                              []);
+                    })
+                    .toList()
+                    .where((element) {
+                      return element.students.contains(user!.uid);
+                    })
+                    .toList();
+
+                return EventSlider(key: UniqueKey(), events: data);
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }),
         const SizedBox(
           height: 30,
         ),
@@ -34,7 +74,37 @@ class CommunitiesFeed extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        EventSlider(dummyData: dummyData),
+        FutureBuilder<QuerySnapshot>(
+            future: communities.get(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text('Error'),
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.done) {
+                List<EventData> data = snapshot.data!.docs
+                    .map((e) {
+                      return EventData(
+                          title: e.id,
+                          date: (e.data() as Map<String, dynamic>)['date'],
+                          students: (e.data()
+                                  as Map<String, dynamic>)['estudiantes'] ??
+                              []);
+                    })
+                    .toList()
+                    .where((element) {
+                      return !element.students.contains(user!.uid);
+                    })
+                    .toList();
+
+                return EventSlider(key: UniqueKey(), events: data);
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }),
       ],
     );
   }
