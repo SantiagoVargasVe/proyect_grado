@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/communities_feed.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -9,11 +10,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   var _selectedIndex = 1;
+  final List<Widget> _children = [
+    const Center(child: Text('Talleres')),
+    CommunitiesFeed(),
+    const Center(child: Text('Tus talleres')),
+    const Center(child: Text('Perfil')),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(child: Text('Home Screen')),
+      body: SafeArea(child: _children[_selectedIndex]),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(255, 251, 254, 1),
         type: BottomNavigationBarType.fixed,
