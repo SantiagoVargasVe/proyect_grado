@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'card_event.dart';
+import '../models/event_data.dart';
 
 class EventSlider extends StatelessWidget {
   const EventSlider({
     Key? key,
-    required this.dummyData,
+    required this.events,
   }) : super(key: key);
 
-  final List dummyData;
+  final List<EventData> events;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class EventSlider extends StatelessWidget {
       height: 250,
       child: GridView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: dummyData.length,
+          itemCount: events.length,
           padding: const EdgeInsets.only(left: 10, bottom: 5),
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               childAspectRatio: 3 / 5,
@@ -24,7 +25,12 @@ class EventSlider extends StatelessWidget {
               crossAxisSpacing: 43,
               mainAxisSpacing: 10),
           itemBuilder: (context, index) {
-            return const GridTile(child: CardEvent(title: "Uwu"));
+            return GridTile(
+                key: UniqueKey(),
+                child: CardEvent(
+                  title: events[index].title,
+                  date: events[index].date,
+                ));
           }),
     );
   }
