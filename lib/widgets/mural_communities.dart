@@ -20,6 +20,12 @@ class MuralCommunities extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
         stream: _postsStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Algo salio mal'));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
           return ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
