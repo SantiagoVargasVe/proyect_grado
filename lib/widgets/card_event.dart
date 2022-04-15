@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/community_home.dart';
 import '../screens/event_description_screen.dart';
 
 class CardEvent extends StatelessWidget {
@@ -21,10 +22,9 @@ class CardEvent extends StatelessWidget {
         splashColor: const Color.fromARGB(255, 164, 102, 212),
         onTap: () {
           if (isParcipating) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Ya estás participando de este evento'),
-              duration: Duration(seconds: 2),
-            ));
+            Navigator.pushNamed(context, CommunityHome.routeName, arguments: {
+              "id": title,
+            });
           } else {
             Navigator.pushNamed(context, EventDescriptionScreen.routeName,
                 arguments: {
