@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import '../screens/event_description_screen.dart';
 
 class CardEvent extends StatelessWidget {
   final String title;
+  final bool isParcipating;
   final DateTime? date;
-  const CardEvent({Key? key, required this.title, this.date}) : super(key: key);
+  const CardEvent(
+      {Key? key, required this.title, this.date, required this.isParcipating})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +19,19 @@ class CardEvent extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         splashColor: const Color.fromARGB(255, 164, 102, 212),
-        onTap: () {},
+        onTap: () {
+          if (isParcipating) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Ya estás participando de este evento'),
+              duration: Duration(seconds: 2),
+            ));
+          } else {
+            Navigator.pushNamed(context, EventDescriptionScreen.routeName,
+                arguments: {
+                  'id': title,
+                });
+          }
+        },
         child: SizedBox(
           child: Padding(
             padding: const EdgeInsets.all(10),

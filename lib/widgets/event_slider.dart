@@ -30,6 +30,7 @@ class EventSlider extends StatelessWidget {
                 child: CardEvent(
                   title: events[index].title,
                   date: events[index].date,
+                  isParcipating: events[index].isParticipating,
                 ));
           }),
     );
