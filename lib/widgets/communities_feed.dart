@@ -5,8 +5,13 @@ import '../models/event_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CommunitiesFeed extends StatelessWidget {
-  final CollectionReference communities =
-      FirebaseFirestore.instance.collection('comunidades');
+  // final Stream<QuerySnapshot> communities = FirebaseFirestore.instance
+  //     .collection('comunidades')
+  //     .snapshots(includeMetadataChanges: true);
+
+  final Stream<QuerySnapshot> communities = FirebaseFirestore.instance
+      .collection('comunidades')
+      .snapshots(includeMetadataChanges: true);
 
   final user = FirebaseAuth.instance.currentUser;
   CommunitiesFeed({Key? key}) : super(key: key);
@@ -24,8 +29,8 @@ class CommunitiesFeed extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        FutureBuilder<QuerySnapshot>(
-            future: communities.get(),
+        StreamBuilder<QuerySnapshot>(
+            stream: communities,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
@@ -33,27 +38,30 @@ class CommunitiesFeed extends StatelessWidget {
                   child: Text('Error'),
                 );
               }
-              if (snapshot.connectionState == ConnectionState.done) {
-                List<EventData> data = snapshot.data!.docs
-                    .map((e) {
-                      return EventData(
-                          title: e.id,
-                          date: (e.data() as Map<String, dynamic>)['date'],
-                          students: (e.data()
-                                  as Map<String, dynamic>)['estudiantes'] ??
-                              []);
-                    })
-                    .toList()
-                    .where((element) {
-                      return element.students.contains(user!.uid);
-                    })
-                    .toList();
 
-                return EventSlider(key: UniqueKey(), events: data);
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+
+              List<EventData> data = snapshot.data!.docs
+                  .map((e) {
+                    return EventData(
+                        title: e.id,
+                        date: (e.data() as Map<String, dynamic>)['date'],
+                        students:
+                            (e.data() as Map<String, dynamic>)['estudiantes'] ??
+                                []);
+                  })
+                  .toList()
+                  .where((element) {
+                    element.isParticipating = true;
+                    return element.students.contains(user!.uid);
+                  })
+                  .toList();
+
+              return EventSlider(key: UniqueKey(), events: data);
             }),
         const SizedBox(
           height: 30,
@@ -68,8 +76,8 @@ class CommunitiesFeed extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        FutureBuilder<QuerySnapshot>(
-            future: communities.get(),
+        StreamBuilder<QuerySnapshot>(
+            stream: communities,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
@@ -77,27 +85,28 @@ class CommunitiesFeed extends StatelessWidget {
                   child: Text('Error'),
                 );
               }
-              if (snapshot.connectionState == ConnectionState.done) {
-                List<EventData> data = snapshot.data!.docs
-                    .map((e) {
-                      return EventData(
-                          title: e.id,
-                          date: (e.data() as Map<String, dynamic>)['date'],
-                          students: (e.data()
-                                  as Map<String, dynamic>)['estudiantes'] ??
-                              []);
-                    })
-                    .toList()
-                    .where((element) {
-                      return !element.students.contains(user!.uid);
-                    })
-                    .toList();
 
-                return EventSlider(key: UniqueKey(), events: data);
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              List<EventData> data = snapshot.data!.docs
+                  .map((e) {
+                    return EventData(
+                        title: e.id,
+                        date: (e.data() as Map<String, dynamic>)['date'],
+                        students:
+                            (e.data() as Map<String, dynamic>)['estudiantes'] ??
+                                []);
+                  })
+                  .toList()
+                  .where((element) {
+                    return !element.students.contains(user!.uid);
+                  })
+                  .toList();
+
+              return EventSlider(key: UniqueKey(), events: data);
             }),
       ],
     );
