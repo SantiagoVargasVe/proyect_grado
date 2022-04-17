@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:proyecto_grado/widgets/card_post.dart';
+import '../models/user_data.dart';
 
 class MuralCommunities extends StatelessWidget {
   const MuralCommunities({Key? key}) : super(key: key);
@@ -31,11 +32,14 @@ class MuralCommunities extends StatelessWidget {
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
+              print(data["usuario"]);
+
               return CardPost(
                   body: data["cuerpo"],
                   publicationTime: data['hora_publicacion'],
                   imageUrl: data['imagen'],
-                  user: data["usuario"]);
+                  user: UserData.fromJson(
+                      data["usuario"] as Map<String, dynamic>));
             }).toList(),
           );
         });

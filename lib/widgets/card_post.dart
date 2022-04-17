@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../models/user_data.dart';
 
 class CardPost extends StatelessWidget {
   final String body;
   final Timestamp publicationTime;
   final String? imageUrl;
-  final String user;
+  final UserData user;
   const CardPost(
       {Key? key,
       required this.body,
@@ -45,14 +46,14 @@ class CardPost extends StatelessWidget {
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: Color.fromRGBO(103, 80, 164, 1),
-                    child: Text(user[0]),
+                    radius: 20,
+                    backgroundImage: NetworkImage(user.photoUrl),
                   ),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user),
+                      Text(user.name),
                       SizedBox(height: 5),
                       Text(getPublicationDateTime(publicationTime)),
                     ],
