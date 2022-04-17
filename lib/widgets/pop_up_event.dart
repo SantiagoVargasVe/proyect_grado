@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/post_community.dart';
+import '../models/user_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PopUpEvent extends StatefulWidget {
   final String communityId;
@@ -20,6 +23,8 @@ class PopUpEvent extends StatefulWidget {
 class _PopUpEventState extends State<PopUpEvent> {
   XFile? _imageFile;
   final _formKey = GlobalKey<FormState>();
+  FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   uploadImage() async {
     final _firebaseStorage = FirebaseStorage.instance;
     final _imagePicker = ImagePicker();
@@ -47,6 +52,24 @@ class _PopUpEventState extends State<PopUpEvent> {
 
   void uploadToFirebase() async {
     String downloadUrl = "";
+
+    final postRef = firestore
+        .collection('comunidades')
+        .doc(widget.communityId)
+        .collection('posts')
+        .withConverter<PostCommunity>(
+            fromFirestore: (snapshot, _) =>
+                PostCommunity.fromJson(snapshot.data()!),
+            toFirestore: (post, _) => post.toJson());
+
+    final currentUser = auth.currentUser;
+    final userFirestore =
+        await firestore.collection('users').doc(currentUser!.uid).get();
+    final userPost = UserData(
+        email: userFirestore['email'],
+        name: userFirestore['nombre'],
+        photoUrl: userFirestore['avatar']);
+
     if (_imageFile != null) {
       var file = File(_imageFile!.path);
       var snapshot = await FirebaseStorage.instance
@@ -55,26 +78,38 @@ class _PopUpEventState extends State<PopUpEvent> {
               'comunidades/${widget.communityId}/eventos/${_imageFile?.name}')
           .putFile(file);
       downloadUrl = await snapshot.ref.getDownloadURL();
-      FirebaseFirestore.instance
-          .collection('comunidades')
-          .doc(widget.communityId)
-          .collection('posts')
-          .add({
-        'cuerpo': _bodyController.text,
-        'imagen': downloadUrl,
-        'hora_publicacion': Timestamp.now(),
-        'usuario': 'Santiago Vargas',
-      });
+
+      postRef.add(PostCommunity(
+          body: _bodyController.text,
+          publishTime: Timestamp.now(),
+          user: userPost,
+          imageUrl: downloadUrl));
+      // FirebaseFirestore.instance
+      //     .collection('comunidades')
+      //     .doc(widget.communityId)
+      //     .collection('posts')
+      //     .add({
+      //   'cuerpo': _bodyController.text,
+      //   'imagen': downloadUrl,
+      //   'hora_publicacion': Timestamp.now(),
+      //   'usuario': 'Santiago Vargas',
+      // });
+
     } else {
-      FirebaseFirestore.instance
-          .collection('comunidades')
-          .doc(widget.communityId)
-          .collection('posts')
-          .add({
-        'cuerpo': _bodyController.text,
-        'hora_publicacion': Timestamp.now(),
-        'usuario': 'Santiago Vargas',
-      });
+      postRef.add(PostCommunity(
+        body: _bodyController.text,
+        publishTime: Timestamp.now(),
+        user: userPost,
+      ));
+      // FirebaseFirestore.instance
+      //     .collection('comunidades')
+      //     .doc(widget.communityId)
+      //     .collection('posts')
+      //     .add({
+      //   'cuerpo': _bodyController.text,
+      //   'hora_publicacion': Timestamp.now(),
+      //   'usuario': 'Santiago Vargas',
+      // });
     }
   }
 
