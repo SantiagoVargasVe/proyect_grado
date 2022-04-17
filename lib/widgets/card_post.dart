@@ -59,7 +59,7 @@ class CardPost extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               imageUrl != null
                   ? Image.network(
                       imageUrl!,
@@ -69,6 +69,7 @@ class CardPost extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 body,
+                textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.bodyText1,
               ),
             ],
