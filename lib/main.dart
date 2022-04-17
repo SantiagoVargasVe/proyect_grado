@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/chat_screen.dart';
 import 'screens/community_home.dart';
 import 'screens/home_screen.dart';
 import 'screens/event_description_screen.dart';
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (context) => HomeScreen(),
         EventDescriptionScreen.routeName: (context) => EventDescriptionScreen(),
         CommunityHome.routeName: (context) => CommunityHome(),
+        ChatScreen.routeName: (context) => ChatScreen(),
       },
     );
   }
