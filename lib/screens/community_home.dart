@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado/widgets/mural_communities.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../widgets/pop_up_event.dart';
 
 class CommunityHome extends StatefulWidget {
   static const routeName = '/community_home';
@@ -16,7 +21,24 @@ class _CommunityHomeState extends State<CommunityHome> {
     Text("Actividades"),
   ];
 
+  String? _imageToUpload;
+  XFile? _imageFile;
   int _selectedIndex = 0;
+
+  _showUploadDialog(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Crear post"),
+            content: PopUpEvent(
+              communityId: args['id'] ?? "",
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +51,14 @@ class _CommunityHomeState extends State<CommunityHome> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: () {},
-          ),
+          _selectedIndex == 0
+              ? IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  onPressed: () {
+                    _showUploadDialog(context);
+                  },
+                )
+              : SizedBox(),
         ],
         title: Text(args['id'] ?? "Comunidad"),
       ),
