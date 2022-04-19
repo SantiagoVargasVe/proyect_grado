@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_grado/screens/chat_screen.dart';
 import 'package:proyecto_grado/widgets/mural_communities.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-
+import '../widgets/activities_communities.dart';
 import '../widgets/pop_up_event.dart';
 
 class CommunityHome extends StatefulWidget {
@@ -18,7 +16,7 @@ class CommunityHome extends StatefulWidget {
 class _CommunityHomeState extends State<CommunityHome> {
   final pages = [
     MuralCommunities(),
-    Text("Actividades"),
+    ActivitiesComunnities(),
   ];
 
   String? _imageToUpload;
