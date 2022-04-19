@@ -32,8 +32,6 @@ class MuralCommunities extends StatelessWidget {
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
-              print(data["usuario"]);
-
               return CardPost(
                   body: data["cuerpo"],
                   publicationTime: data['hora_publicacion'],

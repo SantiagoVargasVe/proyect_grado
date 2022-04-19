@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/chat_screen.dart';
 import 'screens/community_home.dart';
 import 'screens/home_screen.dart';
 import 'screens/event_description_screen.dart';
@@ -48,12 +49,13 @@ class MyApp extends StatelessWidget {
               color: Color.fromRGBO(28, 27, 31, 1),
             )),
       ),
-      home: (user != null) ? HomeScreen() : LandingScreen(),
+      home: (user != null && false) ? HomeScreen() : LandingScreen(),
       routes: {
         RegisterScreen.routeName: (context) => RegisterScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
         EventDescriptionScreen.routeName: (context) => EventDescriptionScreen(),
         CommunityHome.routeName: (context) => CommunityHome(),
+        ChatScreen.routeName: (context) => ChatScreen(),
       },
     );
   }

@@ -25,8 +25,8 @@ class _PopUpEventState extends State<PopUpEvent> {
   final _formKey = GlobalKey<FormState>();
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   uploadImage() async {
-    final _firebaseStorage = FirebaseStorage.instance;
     final _imagePicker = ImagePicker();
     XFile? image;
     //Check Permissions
@@ -84,32 +84,12 @@ class _PopUpEventState extends State<PopUpEvent> {
           publishTime: Timestamp.now(),
           user: userPost,
           imageUrl: downloadUrl));
-      // FirebaseFirestore.instance
-      //     .collection('comunidades')
-      //     .doc(widget.communityId)
-      //     .collection('posts')
-      //     .add({
-      //   'cuerpo': _bodyController.text,
-      //   'imagen': downloadUrl,
-      //   'hora_publicacion': Timestamp.now(),
-      //   'usuario': 'Santiago Vargas',
-      // });
-
     } else {
       postRef.add(PostCommunity(
         body: _bodyController.text,
         publishTime: Timestamp.now(),
         user: userPost,
       ));
-      // FirebaseFirestore.instance
-      //     .collection('comunidades')
-      //     .doc(widget.communityId)
-      //     .collection('posts')
-      //     .add({
-      //   'cuerpo': _bodyController.text,
-      //   'hora_publicacion': Timestamp.now(),
-      //   'usuario': 'Santiago Vargas',
-      // });
     }
   }
 
