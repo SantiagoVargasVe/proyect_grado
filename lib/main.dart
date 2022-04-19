@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
               color: Color.fromRGBO(28, 27, 31, 1),
             )),
       ),
-      home: (user != null) ? HomeScreen() : LandingScreen(),
+      home: (user != null && false) ? HomeScreen() : LandingScreen(),
       routes: {
         RegisterScreen.routeName: (context) => RegisterScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
