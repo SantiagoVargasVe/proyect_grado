@@ -24,11 +24,6 @@ class _LandingScreenState extends State<LandingScreen> {
       return 'El campo es requerido';
     }
 
-    final RegExp emailExp = RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
-    if (!emailExp.hasMatch(value)) {
-      return 'El email no es válido';
-    }
-
     return null;
   }
 
@@ -48,7 +43,8 @@ class _LandingScreenState extends State<LandingScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
+          email: _emailController.text + '@noexiste.com',
+          password: _passwordController.text);
 
       Navigator.of(context).pushNamedAndRemoveUntil(
           HomeScreen.routeName, (Route<dynamic> route) => false);
@@ -102,7 +98,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         controller: _emailController,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Email',
+                          labelText: 'Nombre de usuario',
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
                         validator: validateEmail,

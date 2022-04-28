@@ -36,7 +36,10 @@ class ActivitiesComunnities extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               children: snapshot.data!.docs
                   .map((DocumentSnapshot<Activity> document) {
-                return ActivityCard(activity: document.data()!);
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ActivityCard(activity: document.data()!),
+                );
               }).toList());
         });
   }

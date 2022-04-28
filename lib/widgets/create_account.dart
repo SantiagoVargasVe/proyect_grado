@@ -35,11 +35,6 @@ class _CreateAccountState extends State<CreateAccount> {
       return 'El campo es requerido';
     }
 
-    final RegExp emailExp = RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
-    if (!emailExp.hasMatch(value)) {
-      return 'El email no es válido';
-    }
-
     return null;
   }
 
@@ -91,7 +86,8 @@ class _CreateAccountState extends State<CreateAccount> {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-              email: _emailController.text, password: _passwordController.text);
+              email: _emailController.text + '@noexiste.com',
+              password: _passwordController.text);
 
       addUser();
 
@@ -117,9 +113,9 @@ class _CreateAccountState extends State<CreateAccount> {
 
   Future<void> addUser() async {
     await users.doc(auth.currentUser!.uid).set({
-      'email': _emailController.text,
+      'email': _emailController.text + '@noexiste.com',
       'avatar': _selectedImage,
-      'nombre': _nameController.text,
+      'nombre': _emailController.text,
     });
   }
 
@@ -145,23 +141,23 @@ class _CreateAccountState extends State<CreateAccount> {
                         controller: _emailController,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Email',
-                          hintText: "seneca@uniandes.edu.co",
+                          labelText: 'Nombre de usuario',
+                          hintText: "SenecaLover",
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
                         validator: validateEmail,
                       ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Nombre',
-                          hintText: "Seneca",
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                        ),
-                        validator: validateName,
-                      ),
+                      // const SizedBox(height: 20),
+                      // TextFormField(
+                      //   controller: _nameController,
+                      //   decoration: const InputDecoration(
+                      //     border: OutlineInputBorder(),
+                      //     labelText: 'Nombre',
+                      //     hintText: "Seneca",
+                      //     floatingLabelBehavior: FloatingLabelBehavior.always,
+                      //   ),
+                      //   validator: validateName,
+                      // ),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _passwordController,
